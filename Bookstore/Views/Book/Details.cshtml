@@ -1,0 +1,152 @@
+@model Bookstore.Models.Book
+
+@{
+    ViewData["Title"] = "Book Details";
+}
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Book" asp-action="Index">Books</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Book Cover</h5>
+            </div>
+            <div class="text-center p-4">
+                @if (Model.ImageUrl != null)
+                {
+                    <img src="~/uploads/@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title" style="max-height: 300px;" />
+                }
+                else
+                {
+                    <div class="py-5 bg-light text-center">
+                        <i class="fas fa-book fa-5x text-muted"></i>
+                        <p class="mt-3 text-muted">No Cover Image</p>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                        <i class="fas fa-edit mr-2"></i> Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">@Model.Title</h3>
+            </div>
+            <div class="card-body">
+                <div class="book-details">
+                    <div class="book-info mb-4">
+                        <span class="badge badge-pill" style="background: linear-gradient(to right, var(--primary-color), var(--secondary-color)); color: white;">
+                            Book #@Model.Id
+                        </span>
+                        <span class="badge badge-pill badge-light">
+                            <i class="fas fa-user mr-1"></i> @(Model.Author != null ? Model.Author.FullName : "Unknown Author")
+                        </span>
+                    </div>
+
+                    <h5 class="text-primary mb-3">Description</h5>
+                    <p class="lead">@Model.Description</p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <h6><i class="fas fa-info-circle mr-2"></i>Book ID</h6>
+                                <p>@Model.Id</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <h6><i class="fas fa-user mr-2"></i>Author</h6>
+                                <p>@(Model.Author != null ? Model.Author.FullName : "No Author")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.PdfUrl))
+                    {
+                        <div class="mt-4">
+                            <div class="detail-item pdf-item">
+                                <h6><i class="fas fa-file-pdf mr-2 text-danger"></i>PDF Version</h6>
+                                <div class="d-flex align-items-center">
+                                    <span class="mr-3">@Model.PdfUrl</span>
+                                    <a href="~/uploads/pdfs/@Model.PdfUrl" target="_blank" class="btn btn-primary">
+                                        <i class="fas fa-download mr-2"></i> Download PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                        <i class="fas fa-trash-alt mr-2"></i> Delete
+                    </a>
+                    <a href="#" onclick="window.print()" class="btn btn-outline-dark">
+                        <i class="fas fa-print mr-2"></i> Print
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .detail-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .detail-item h6 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .detail-item p {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            padding: 8px 15px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .pdf-item {
+            background-color: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+}

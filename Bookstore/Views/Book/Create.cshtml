@@ -1,0 +1,166 @@
+﻿@model Bookstore.ViewModels.BookAuthorViewModel
+
+@{
+    ViewData["Title"] = "Add New Book";
+}
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Book" asp-action="Index">Books</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add New Book</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-white mb-0">Add New Book</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> @ViewBag.Message
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Title" class="control-label font-weight-bold">Book Title</label>
+                        <input asp-for="Title" class="form-control" placeholder="Enter book title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label font-weight-bold">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter book description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="AuthorId" class="control-label font-weight-bold">Author</label>
+                        <select asp-for="AuthorId" class="form-control"
+                                asp-items="@(new SelectList(Model.Authors, "Id", "FullName"))"></select>
+                        <span asp-validation-for="AuthorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold">Book Cover Image</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFile" name="File" asp-for="File" onchange="displayFileName()" accept="image/*">
+                            <label class="custom-file-label" for="customFile" id="fileLabel">Choose image file</label>
+                        </div>
+                        <small class="form-text text-muted">Upload a cover image for the book (JPG, PNG, GIF)</small>
+                        <span asp-validation-for="File" class="text-danger"></span>
+
+                        <div class="mt-3" id="imagePreview" style="display: none;">
+                            <p>Image Preview:</p>
+                            <img id="preview" src="#" alt="Preview" class="img-thumbnail" style="max-height: 200px;" />
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="control-label font-weight-bold">Book PDF File</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="pdfFile" name="PdfFile" asp-for="PdfFile" onchange="displayPdfFileName()" accept=".pdf">
+                            <label class="custom-file-label" for="pdfFile" id="pdfFileLabel">Choose PDF file</label>
+                        </div>
+                        <small class="form-text text-muted">Upload a PDF version of the book (PDF only)</small>
+                        <span asp-validation-for="PdfFile" class="text-danger"></span>
+
+                        <div class="mt-3" id="pdfPreview" style="display: none;">
+                            <p>PDF Selected: <span id="pdfName" class="text-primary"></span></p>
+                            <div class="alert alert-success">
+                                <i class="fas fa-file-pdf mr-2"></i> PDF file selected successfully
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save mr-2"></i> Save Book
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg ml-2">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to List
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="text-white mb-0">Tips for Adding Books</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-info-circle text-primary mr-2"></i>
+                        All fields marked with * are required
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-image text-primary mr-2"></i>
+                        Upload images in JPG, PNG or GIF format
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-text-height text-primary mr-2"></i>
+                        Provide a detailed description for better visibility
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-user text-primary mr-2"></i>
+                        Select an author from the dropdown or add a new author first
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_Validation" />
+    <script>
+        function displayFileName() {
+            var input = document.getElementById('customFile');
+            var label = document.getElementById('fileLabel');
+            var preview = document.getElementById('preview');
+            var imagePreview = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                var fileName = input.files[0].name;
+                label.innerHTML = fileName;
+
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function displayPdfFileName() {
+            var input = document.getElementById('pdfFile');
+            var label = document.getElementById('pdfFileLabel');
+            var pdfName = document.getElementById('pdfName');
+            var pdfPreview = document.getElementById('pdfPreview');
+
+            if (input.files && input.files[0]) {
+                var fileName = input.files[0].name;
+                label.innerHTML = fileName;
+                pdfName.textContent = fileName;
+                pdfPreview.style.display = 'block';
+            }
+        }
+    </script>
+}
